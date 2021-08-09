@@ -28,11 +28,15 @@ e.g. You have `a@gmail.com` and `b@gmail.com`
 
 ### Set up variables
 
-To execute the GAS, please configure three variables.
+This setting has been moved to Script Properties. The new Google App Script editor does not allow you to set script properties.
+Please set it from the old editor UI.
 
-- `DAYS_TO_SYNC`: To sync events 30 days from now, please set 30.
-- `CALENDAR_IDS`: Email address mapping of source calendar ID and guest calendar ID
-- `SLACK_WEBHOOK_URL`: There is something wrong, error will be notified to this Slack channel.
+- DAYS_TO_SYNC:How many days until the next appointment should be synchronized.
+- CALENDAR_ID_FROM:The ID of the calendar to synchronize from
+- CALENDAR_ID_TO:ID of the calendar to synchronize to
+- SLACK_WEBHOOK_URL:Webhook URL of Slack or Discord to be notified
+- EXPORT_WORDS:Text in the title of the event to be exported to the calendar to be synchronized (multiple titles can be specified, separated by tabs).
+  - For example, if you want to export an event that contains the phrase "SBCast. or SBC.openmike", enter the phrase "SBCast.\tSBC.openmic".
 
 ### Set up trigger
 
