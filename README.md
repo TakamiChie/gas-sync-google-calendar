@@ -47,3 +47,10 @@ To execute the GAS automatically, please set up the trigger
 - Run: `main`
 - Events: `Time-driven`
 
+## FAQ
+
+### Q. Why do I have to add a guest instead of copying the calendar?
+
+A. When you copy an event, there is no theoretical connection between the events, so when you edit the event later, the information will not be reflected in the synced calendar. 
+
+If you add an event as a guest, the information will be reflected when you edit the event later, so it is called adding an event as a guest.
