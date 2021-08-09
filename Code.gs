@@ -46,12 +46,17 @@ function syncStatus(event, guest){
 
 function invite(event, guestId){
   event.addGuest(guestId);
+  notify('Invited: ' + event.getTitle() + ' (' + event.getStartTime() + ')');
   Logger.log('Invited: ' + event.getTitle() + ' (' + event.getStartTime() + ')');
 }
 
 function notify(message){
   if(SLACK_WEBHOOK_URL.startsWith("http")){
-    var data = {'text': message};
+    var data = {};
+    if(SLACK_WEBHOOK_URL.includes("slack"))
+      data = {'text': message};
+    else if(SLACK_WEBHOOK_URL.includes("discord"))
+      data = {'content': message};
     var options = {
       'method': 'post',
       'contentType': 'application/json',
