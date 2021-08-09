@@ -4,12 +4,14 @@ var DAYS_TO_SYNC;
 var CALENDAR_ID_FROM;
 var CALENDAR_ID_TO;
 var SLACK_WEBHOOK_URL;
+var EXPORT_WORDS;
 function main(){
   var prop = PropertiesService.getScriptProperties();
   DAYS_TO_SYNC = parseInt(prop.getProperty("DAYS_TO_SYNC"));
   CALENDAR_ID_FROM = prop.getProperty("CALENDAR_ID_FROM");
   CALENDAR_ID_TO = prop.getProperty("CALENDAR_ID_TO");
   SLACK_WEBHOOK_URL = prop.getProperty("SLACK_WEBHOOK_URL");
+  EXPORT_WORDS = prop.getProperty("EXPORT_WORDS").split("\t");
   var dateFrom = new Date();
   var dateTo = new Date(dateFrom.getTime() + (DAYS_TO_SYNC * 24 * 60 * 60* 1000));
   
@@ -19,8 +21,10 @@ function main(){
   
   var events = CalendarApp.getCalendarById(sourceId).getEvents(dateFrom, dateTo);
   events.forEach(function(event){
-    var guest = event.getGuestByEmail(guestId);
-    guest ? syncStatus(event, guest) : invite(event, guestId);
+    if(EXPORT_WORDS.some((e) => event.getTitle().includes(e))){
+      var guest = event.getGuestByEmail(guestId);
+      guest ? syncStatus(event, guest) : invite(event, guestId);
+    }
   });
 }
 
