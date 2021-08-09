@@ -1,29 +1,26 @@
 // README
 // Instruction: https://github.com/soetani/gas-sync-google-calendar
-// 1. How many days do you want to sync your calendars?
-var DAYS_TO_SYNC = 30;
-// 2. Calendar ID mapping: [Calendar ID (Source), Calendar ID (Guest)]
-var CALENDAR_IDS = [
-  ['source_01@example.com', 'guest_01@example.net'],
-  ['source_02@example.com', 'guest_02@example.net']
-];
-// 3. What is Slack webhook URL? You'll be notified when the sync is failed
-var SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/foobar';
-
+var DAYS_TO_SYNC;
+var CALENDAR_ID_FROM;
+var CALENDAR_ID_TO;
+var SLACK_WEBHOOK_URL;
 function main(){
+  var prop = PropertiesService.getScriptProperties();
+  DAYS_TO_SYNC = parseInt(prop.getProperty("DAYS_TO_SYNC"));
+  CALENDAR_ID_FROM = prop.getProperty("CALENDAR_ID_FROM");
+  CALENDAR_ID_TO = prop.getProperty("CALENDAR_ID_TO");
+  SLACK_WEBHOOK_URL = prop.getProperty("SLACK_WEBHOOK_URL");
   var dateFrom = new Date();
   var dateTo = new Date(dateFrom.getTime() + (DAYS_TO_SYNC * 24 * 60 * 60* 1000));
   
-  CALENDAR_IDS.forEach(function(ids){
-    var sourceId = ids[0];
-    var guestId = ids[1];
-    Logger.log('Source: ' + sourceId + ' / Guest: ' + guestId);
-    
-    var events = CalendarApp.getCalendarById(sourceId).getEvents(dateFrom, dateTo);
-    events.forEach(function(event){
-      var guest = event.getGuestByEmail(guestId);
-      guest ? syncStatus(event, guest) : invite(event, guestId);
-    });
+  var sourceId = CALENDAR_ID_FROM;
+  var guestId = CALENDAR_ID_TO;
+  Logger.log('Source: ' + sourceId + ' / Guest: ' + guestId);
+  
+  var events = CalendarApp.getCalendarById(sourceId).getEvents(dateFrom, dateTo);
+  events.forEach(function(event){
+    var guest = event.getGuestByEmail(guestId);
+    guest ? syncStatus(event, guest) : invite(event, guestId);
   });
 }
 
@@ -49,11 +46,13 @@ function invite(event, guestId){
 }
 
 function notify(message){
-  var data = {'text': message};
-  var options = {
-    'method': 'post',
-    'contentType': 'application/json',
-    'payload': JSON.stringify(data)
-  };
-  UrlFetchApp.fetch(SLACK_WEBHOOK_URL, options);
+  if(SLACK_WEBHOOK_URL.startsWith("http")){
+    var data = {'text': message};
+    var options = {
+      'method': 'post',
+      'contentType': 'application/json',
+      'payload': JSON.stringify(data)
+    };
+    UrlFetchApp.fetch(SLACK_WEBHOOK_URL, options);
+  }
 }
